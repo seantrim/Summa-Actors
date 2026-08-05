@@ -95,10 +95,11 @@ endif()
 # COMPILE PART 1: Define directory paths
 #=========================================================================================
 
-# Define directories that contains source code
+# Define directories that contains source code (SJT: any way to import these from SUMMA to avoid build errors when directories change?)
 set(DRIVER_DIR ${F_MASTER}/build/summa/build/source/driver)
 set(DSHARE_DIR ${F_MASTER}/build/summa/build/source/dshare)
 set(ENGINE_DIR ${F_MASTER}/build/summa/build/source/engine)
+set(NNSOLV_DIR ${F_MASTER}/build/summa/build/source/nested_Newton_library)
 set(HOOKUP_DIR ${F_MASTER}/build/summa/build/source/hookup)
 set(NETCDF_DIR ${F_MASTER}/build/summa/build/source/netcdf)
 set(NOAHMP_DIR ${F_MASTER}/build/summa/build/source/noah-mp)
@@ -140,7 +141,7 @@ list(REMOVE_ITEM DRIVER
 # COMPILE PART 3: Collect the subroutines into build groups depending on build type
 #=========================================================================================
 set(COMM_ALL ${NRPROC} ${HOOKUP} ${DATAMS} ${UTILMS})
-set(SUMMA_ALL ${NETCDF} ${PRELIM} ${MODRUN} ${SOLVER} ${DRIVER})
+set(SUMMA_ALL ${NETCDF} ${PRELIM} ${MODRUN} ${SOLVER} ${NNSOLV} ${DRIVER})
 set(COMM_ALL ${COMM_ALL} ${DATAMS_ACTORS} ${INTERFACE})
 set(SUMMA_ALL ${SUMMA_ALL} ${SYS_INIT_INTERFACE} ${FILE_ACCESS_INTERFACE}
               ${JOB_INTERFACE} ${GRU_INTERFACE})
@@ -201,20 +202,20 @@ add_library(summa SHARED ${SUMMA_ALL} ${F_MASTER}/build/source/global/global_tol
 set_target_properties(summa PROPERTIES
     Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/mod_files"
 )
-target_compile_options(summa PRIVATE ${FLAGS_ALL})
+target_compile_options(summa PRIVATE ${FLAGS_ALL} "-fno-semantic-interposition")
 target_include_directories(summa PRIVATE ${DRIVER_DIR})
-target_link_libraries(summa PUBLIC ${EXT_TARGETS} SUMMA_NOAHMP SUMMA_COMM)
+target_link_libraries(summa PUBLIC ${EXT_TARGETS} "-Wl,-Bsymbolic-functions" SUMMA_NOAHMP SUMMA_COMM)
 
 
 add_executable(${EXEC_NAME} ${MAIN_SUMMA} ${ACTORS_GLOBAL} 
                ${FILE_ACCESS_ACTOR} ${JOB_ACTOR} ${GRU_ACTOR} ${SYS_INIT})
 
 set_property(TARGET ${EXEC_NAME} PROPERTY LINKER_LANGUAGE Fortran)
-target_compile_options(${EXEC_NAME} PUBLIC ${FLAGS_CXX})
+target_compile_options(${EXEC_NAME} PUBLIC ${FLAGS_CXX} "-fno-semantic-interposition")
 target_include_directories(${EXEC_NAME} PUBLIC 
                            ${F_MASTER}/build/includes/global 
                            ${F_MASTER}/build/includes/summa_actor 
                            ${F_MASTER}/build/includes/job_actor 
                            ${F_MASTER}/build/includes/file_access_actor 
                            ${F_MASTER}/build/includes/gru_actor)
-target_link_libraries( ${EXEC_NAME} ${EXT_TARGETS} summa)
+target_link_libraries( ${EXEC_NAME} ${EXT_TARGETS} "-Wl,-Bsymbolic-functions" summa)
