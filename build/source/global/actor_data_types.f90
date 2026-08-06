@@ -133,6 +133,7 @@ module actor_data_types
     type(var_dlength),pointer                  :: progStruct                 ! model prognostic (state) variables
     type(var_dlength),pointer                  :: diagStruct                 ! model diagnostic variables
     type(var_dlength),pointer                  :: fluxStruct                 ! model fluxes
+    type(convergence_stats_data),pointer       :: convStruct                 ! Newton iteration convergence stats data entries (nested Newton and homegrown)
     ! basin-average structures
     type(var_d),pointer                        :: bparStruct                 ! basin-average variables
     type(var_dlength),pointer                  :: bvarStruct                 ! basin-average variables
