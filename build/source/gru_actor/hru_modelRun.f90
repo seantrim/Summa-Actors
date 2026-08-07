@@ -67,6 +67,7 @@ USE mDecisions_module,only:&               ! look-up values for LAI decisions
 implicit none
 private
 public::runPhysics
+public::initialize_convStruct
 contains
 
 ! Runs the model physics for an HRU
@@ -342,4 +343,19 @@ end subroutine runPhysics
     ! If the global default tolerance flag is set, then override the specific tolerances 
   end subroutine set_sundials_tolerances
 #endif
+
+  subroutine initialize_convStruct(hru_data)
+    ! *** initialize Newton iteration convergence stat variables for nested Newton and homegrown solvers ***
+    implicit none
+    type(hru_type), intent(inout)             :: hru_data               ! c_ptr to -- hru data
+
+    hru_data % convStruct % high_level_step_reductions        = 0_i4b
+    hru_data % convStruct % low_level_step_reductions         = 0_i4b
+    hru_data % convStruct % low_level_step_reductions_coupled = 0_i4b  
+    hru_data % convStruct % splitting_failures                = 0_i4b
+    hru_data % convStruct % splitting_failures_coupled        = 0_i4b
+    hru_data % convStruct % classical_steps_coupled           = 0_i4b 
+    hru_data % convStruct % nested_steps_coupled              = 0_i4b
+  end subroutine initialize_convStruct
+
 end module summa_modelRun
