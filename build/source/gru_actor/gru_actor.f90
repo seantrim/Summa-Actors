@@ -265,8 +265,6 @@ end associate summaVars
 
 end subroutine setupGRU
 
-
-
 subroutine f_initGru(indx_gru, handle_gru_data, output_buffer_steps, &
     err, message_r) bind(C, name="f_initGru")
   USE actor_data_types,only:gru_type             

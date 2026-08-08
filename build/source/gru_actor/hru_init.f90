@@ -174,11 +174,29 @@ subroutine initHRU(indx_gru, indx_hru, hru_data, err, message)
   ! set stats flag for the timestep-level output
   hru_data%finalizeStats%dat(iLookFreq%timestep)=.true.
 
+  ! initialize Newton iteration convergence stat variables for nested Newton and homegrown solvers
+  call initialize_convStruct
+
   ! identify the end of the initialization
   call date_and_time(values=endInit)
 
   ! end association to info in data structures
   end associate
+
+contains
+
+  subroutine initialize_convStruct
+    ! *** initialize Newton iteration convergence stat variables for nested Newton and homegrown solvers ***
+    implicit none
+  
+    hru_data % convStruct % high_level_step_reductions        = 0_i4b
+    hru_data % convStruct % low_level_step_reductions         = 0_i4b
+    hru_data % convStruct % low_level_step_reductions_coupled = 0_i4b  
+    hru_data % convStruct % splitting_failures                = 0_i4b
+    hru_data % convStruct % splitting_failures_coupled        = 0_i4b
+    hru_data % convStruct % classical_steps_coupled           = 0_i4b 
+    hru_data % convStruct % nested_steps_coupled              = 0_i4b
+  end subroutine initialize_convStruct
 
 end subroutine initHRU
 
