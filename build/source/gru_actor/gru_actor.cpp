@@ -139,6 +139,8 @@ behavior GruActor::async_mode() {
         output_step_++;
 
         if (timestep_ > num_steps_) {
+          f_finalGru(job_index_, gru_data_.get(), err,
+                    &message);
           self_->mail(done_hru_v).send(self_);
           break;
         }
