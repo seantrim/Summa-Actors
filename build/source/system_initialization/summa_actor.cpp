@@ -18,6 +18,9 @@
 using json = nlohmann::json;
 using namespace caf;
 
+// Newton iteration convergence stats for all GRUs
+std::vector<conv_stats> convStats;
+
 behavior SummaActor::make_behavior() {
   self_->println("Starting SUMMA Actor, start_gru {}, num_gru {}", start_gru_, 
                  num_gru_);
@@ -58,6 +61,9 @@ behavior SummaActor::make_behavior() {
     self_->quit();
     return {};
   }
+
+  // Newton iteration convergence stats for all GRUs
+  convStats.resize(num_gru_);
 
   batch_container_ = std::make_unique<BatchContainer>(start_gru_, num_gru_, 
       settings_.summa_actor_settings_.max_gru_per_job_, log_folder_);

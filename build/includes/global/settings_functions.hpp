@@ -18,6 +18,19 @@
 
 using json = nlohmann::json;
 
+// Newton iteration convergence stats (per GRU) --- may need to put in a separate header file
+struct conv_stats {
+  //int high_level_step_reductions; 
+  //int low_level_step_reductions; 
+  int low_level_step_reductions_coupled; 
+  //int splitting_failures; 
+  int splitting_failures_coupled;
+  int classical_steps_coupled;  
+  int nested_steps_coupled;
+};
+
+extern std::vector<conv_stats> convStats;
+
 class DistributedSettings {
   public:
     bool distributed_mode_;                    

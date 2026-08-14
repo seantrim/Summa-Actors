@@ -13,7 +13,6 @@
 #include "message_atoms.hpp"
 #include "summa_global_data.hpp"
 
-
 class SummaActor {
   caf::event_based_actor* self_;
 

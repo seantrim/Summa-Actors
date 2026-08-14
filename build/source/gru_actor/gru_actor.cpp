@@ -140,7 +140,8 @@ behavior GruActor::async_mode() {
 
         if (timestep_ > num_steps_) {
           f_finalGru(job_index_, gru_data_.get(), err,
-                    &message);
+                    &message); //Newton iteration convergence stats
+	  //convStats[].nested_steps_coupled = 989; //SJT: fix this -- need GRU index for convStats vector index
           self_->mail(done_hru_v).send(self_);
           break;
         }
