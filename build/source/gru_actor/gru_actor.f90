@@ -7,6 +7,7 @@ USE globalData,only:realMissing
 implicit none
 public::f_getNumHruInGru
 public::f_initGru
+public::f_finalGru
 public::f_setGruTolerances
 public::setupGRU_fortran
 public::readGRURestart_fortran
