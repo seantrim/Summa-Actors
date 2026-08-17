@@ -17,7 +17,11 @@ extern "C" {
   void f_initGru(int& index_gru, void* gru_data, int& output_buffer_steps, 
       int& err, void* message);
   void f_finalGru(int& index_gru, void* gru_data, 
-      int& err, void* message);
+                  int& low_level_step_reductions_coupled,
+                  int& splitting_failures_coupled,
+                  int& classical_steps_coupled,
+                  int& nested_steps_coupled,
+                  int& err, void* message);
   void setupGRU_fortran(int& index_gru, void* gru_data, int& err, 
       void* message);
   void readGRURestart_fortran(int& index_gru, void* gru_data, int& err, 

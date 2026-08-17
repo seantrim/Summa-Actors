@@ -323,15 +323,23 @@ subroutine f_initGru(indx_gru, handle_gru_data, output_buffer_steps, &
 end subroutine f_initGru
 
 subroutine f_finalGru(indx_gru, handle_gru_data, &
-    err, message_r) bind(C, name="f_finalGru")
+                      low_level_step_reductions_coupled, &
+                      splitting_failures_coupled, &
+                      classical_steps_coupled, &
+                      nested_steps_coupled, &
+                      err, message_r) bind(C, name="f_finalGru")
   USE actor_data_types,only:gru_type             
   USE C_interface_module,only:f_c_string_ptr  ! convert fortran string to c string
   implicit none
   ! Dummy variables
   integer(c_int), intent(in)          :: indx_gru
   type(c_ptr),    intent(in),value    :: handle_gru_data
+  integer(c_int), intent(out)         :: low_level_step_reductions_coupled ! per GRU
+  integer(c_int), intent(out)         :: splitting_failures_coupled        ! per GRU
+  integer(c_int), intent(out)         :: classical_steps_coupled           ! per GRU
+  integer(c_int), intent(out)         :: nested_steps_coupled              ! per GRU
   integer(c_int), intent(out)         :: err
-  type(c_ptr),   intent(out)          :: message_r
+  type(c_ptr),    intent(out)         :: message_r
 
   ! local variables
   type(gru_type),pointer              :: gru_data
@@ -343,19 +351,24 @@ subroutine f_finalGru(indx_gru, handle_gru_data, &
   call f_c_string_ptr(trim(message), message_r)
   call c_f_pointer(handle_gru_data, gru_data)
 
+  ! ****************************************************************************
+  ! compute Newton iteration convergence stats per GRU
+  ! ****************************************************************************
+  low_level_step_reductions_coupled = sum(gru_data % hru(:) % convStruct % low_level_step_reductions_coupled)
+  splitting_failures_coupled        = sum(gru_data % hru(:) % convStruct % splitting_failures_coupled)
+  classical_steps_coupled           = sum(gru_data % hru(:) % convStruct % classical_steps_coupled)
+  nested_steps_coupled              = sum(gru_data % hru(:) % convStruct % nested_steps_coupled)
 !  ! ****************************************************************************
 !  ! Print Newton iteration convergence stats per HRU
 !  ! ****************************************************************************
-  print *, "GRU=",indx_gru
-  do iHRU = 1, size(gru_data%hru)
-    print *, "HRU=",iHRU
-    print *, "monolithic substep reductions =", gru_data % hru(iHRU) % convStruct % low_level_step_reductions_coupled
-    print *, "monolithic failures           =", gru_data % hru(iHRU) % convStruct % splitting_failures_coupled
-    print *, "monolithic classical steps    =", gru_data % hru(iHRU) % convStruct % classical_steps_coupled
-    print *, "monolithic nested steps       =", gru_data % hru(iHRU) % convStruct % nested_steps_coupled
-!    call initHRU(indx_gru, iHRU, gru_data%hru(iHRU), err, message)
-!    if(err /= 0) then; call f_c_string_ptr(trim(message), message_r);return; end if
-  end do
+!  print *, "GRU=",indx_gru
+!  do iHRU = 1, size(gru_data%hru)
+!    print *, "HRU=",iHRU
+!    print *, "monolithic substep reductions =", gru_data % hru(iHRU) % convStruct % low_level_step_reductions_coupled
+!    print *, "monolithic failures           =", gru_data % hru(iHRU) % convStruct % splitting_failures_coupled
+!    print *, "monolithic classical steps    =", gru_data % hru(iHRU) % convStruct % classical_steps_coupled
+!    print *, "monolithic nested steps       =", gru_data % hru(iHRU) % convStruct % nested_steps_coupled
+!  end do
 end subroutine f_finalGru
 
 subroutine setupGRU_fortran(indx_gru, handle_gru_data, err, message_r) & 
