@@ -63,7 +63,7 @@ behavior SummaActor::make_behavior() {
   }
 
   // Newton iteration convergence stats for all GRUs
-  convStats.resize(num_gru_);
+  convStats.resize(num_gru_+1);
 
   batch_container_ = std::make_unique<BatchContainer>(start_gru_, num_gru_, 
       settings_.summa_actor_settings_.max_gru_per_job_, log_folder_);
@@ -208,10 +208,34 @@ void SummaActor::finalize() {
                  write_dur_sec, num_gru_failed_, num_gru_restarts_);
 
   //Newton iteration convergence stats
-  self_->println("\nSJT: {}",convStats[1].nested_steps_coupled);
-  self_->println("\nSJT: {}",convStats[1].nested_steps_coupled);
-  self_->println("\nSJT: {}",convStats[1].nested_steps_coupled);
-  self_->println("\nSJT: {}",convStats[1].nested_steps_coupled);
+  bool print_per_GRU = false;
+  long long monolithic_substep_reductions_sum = 0LL;
+  long long monolithic_splitting_failures_sum = 0LL;
+  long long monolithic_classical_steps_sum = 0LL;
+  long long monolithic_nested_steps_sum = 0LL;
+  for (int iGRU = 1; iGRU <= num_gru_; ++iGRU) {
+      monolithic_substep_reductions_sum += convStats[iGRU].low_level_step_reductions_coupled;
+      monolithic_splitting_failures_sum += convStats[iGRU].splitting_failures_coupled;
+      monolithic_classical_steps_sum += convStats[iGRU].classical_steps_coupled;
+      monolithic_nested_steps_sum += convStats[iGRU].nested_steps_coupled;
+
+      if (print_per_GRU) {
+          self_->println("\nGRU= {} / {}",iGRU,num_gru_);
+          self_->println("monolithic substep reductions = {}",convStats[iGRU].low_level_step_reductions_coupled);
+          self_->println("monolithic splitting failures = {}",convStats[iGRU].splitting_failures_coupled);
+          self_->println("monolithic classical steps    = {}",convStats[iGRU].classical_steps_coupled);
+          self_->println("monolithic nested steps       = {}",convStats[iGRU].nested_steps_coupled);
+      }
+  }
+  double monolithic_substep_reductions_mean = monolithic_substep_reductions_sum / static_cast<double>(num_gru_);
+  double monolithic_splitting_failures_mean = monolithic_splitting_failures_sum / static_cast<double>(num_gru_);
+  double monolithic_classical_steps_mean = monolithic_classical_steps_sum / static_cast<double>(num_gru_);
+  double monolithic_nested_steps_mean = monolithic_nested_steps_sum / static_cast<double>(num_gru_);
+  self_->println("\nConvergence Stats (Mean Per GRU):");
+  self_->println("monolithic substep reductions = {}",monolithic_substep_reductions_mean);
+  self_->println("monolithic splitting failures = {}",monolithic_splitting_failures_mean);
+  self_->println("monolithic classical steps    = {}",monolithic_classical_steps_mean);
+  self_->println("monolithic nested steps       = {}\n",monolithic_nested_steps_mean);
 
   self_->mail(done_batch_v, total_dur_sec, read_dur_sec, write_dur_sec).send(parent_);
 

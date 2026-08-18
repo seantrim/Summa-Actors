@@ -352,12 +352,12 @@ subroutine f_finalGru(indx_gru, handle_gru_data, &
   call c_f_pointer(handle_gru_data, gru_data)
 
   ! ****************************************************************************
-  ! compute Newton iteration convergence stats per GRU
+  ! compute total Newton iteration convergence stats per GRU
   ! ****************************************************************************
-  low_level_step_reductions_coupled = sum(gru_data % hru(:) % convStruct % low_level_step_reductions_coupled)
-  splitting_failures_coupled        = sum(gru_data % hru(:) % convStruct % splitting_failures_coupled)
-  classical_steps_coupled           = sum(gru_data % hru(:) % convStruct % classical_steps_coupled)
-  nested_steps_coupled              = sum(gru_data % hru(:) % convStruct % nested_steps_coupled)
+  low_level_step_reductions_coupled = sum(gru_data % hru(1:) % convStruct % low_level_step_reductions_coupled)
+  splitting_failures_coupled        = sum(gru_data % hru(1:) % convStruct % splitting_failures_coupled)
+  classical_steps_coupled           = sum(gru_data % hru(1:) % convStruct % classical_steps_coupled)
+  nested_steps_coupled              = sum(gru_data % hru(1:) % convStruct % nested_steps_coupled)
 !  ! ****************************************************************************
 !  ! Print Newton iteration convergence stats per HRU
 !  ! ****************************************************************************
