@@ -72,6 +72,11 @@ endif()
 
 # Set compiler flags
 set(FLAGS_OPT $ENV{FLAGS_OPT}) # get optional user-specified flags from environment variables
+if(DEFINED ENV{LIBRARY_LINKS}) 
+    set(LIBRARY_LINKS "$ENV{LIBRARY_LINKS}")
+else()
+    set(LIBRARY_LINKS "")
+endif()
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     message("\nSetting Debug Options")
     add_compile_definitions(DEBUG) 
@@ -204,7 +209,7 @@ set_target_properties(summa PROPERTIES
 )
 target_compile_options(summa PRIVATE ${FLAGS_ALL} "-fno-semantic-interposition")
 target_include_directories(summa PRIVATE ${DRIVER_DIR})
-target_link_libraries(summa PUBLIC ${EXT_TARGETS} "-Wl,-Bsymbolic-functions" SUMMA_NOAHMP SUMMA_COMM)
+target_link_libraries(summa PUBLIC ${EXT_TARGETS} ${LIBRARY_LINKS} "-Wl,-Bsymbolic-functions" SUMMA_NOAHMP SUMMA_COMM)
 
 
 add_executable(${EXEC_NAME} ${MAIN_SUMMA} ${ACTORS_GLOBAL} 
@@ -218,4 +223,4 @@ target_include_directories(${EXEC_NAME} PUBLIC
                            ${F_MASTER}/build/includes/job_actor 
                            ${F_MASTER}/build/includes/file_access_actor 
                            ${F_MASTER}/build/includes/gru_actor)
-target_link_libraries( ${EXEC_NAME} ${EXT_TARGETS} "-Wl,-Bsymbolic-functions" summa)
+target_link_libraries( ${EXEC_NAME} ${EXT_TARGETS} ${LIBRARY_LINKS} "-Wl,-Bsymbolic-functions" summa)
