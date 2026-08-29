@@ -34,7 +34,7 @@ export FLAGS_OPT="-flto"
 #export CMAKE_PREFIX_PATH="$INSTALL_DIR/netcdf-fortran:$INSTALL_DIR/netcdf-c:$INSTALL_DIR/lapack:$CMAKE_PREFIX_PATH"
 
 cmake -B ./cmake_build -S .. -DUSE_SUNDIALS=ON -DCMAKE_BUILD_TYPE=Release
-cmake --build ./cmake_build --target all -j
+cmake --build ./cmake_build --target all -j2
 
 
 
