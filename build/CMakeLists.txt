@@ -203,7 +203,8 @@ target_compile_options(SUMMA_COMM PRIVATE ${FLAGS_ALL})
 target_link_libraries(SUMMA_COMM PUBLIC SUMMA_NOAHMP ${EXT_TARGETS}) # added flags to the link step
 
 # Build SUMMA Object
-add_library(summa SHARED ${SUMMA_ALL} ${F_MASTER}/build/source/global/global_tol.f90)
+#add_library(summa SHARED ${SUMMA_ALL} ${F_MASTER}/build/source/global/global_tol.f90)
+add_library(summa STATIC ${SUMMA_ALL} ${F_MASTER}/build/source/global/global_tol.f90)
 set_target_properties(summa PROPERTIES
     Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/mod_files"
 )
